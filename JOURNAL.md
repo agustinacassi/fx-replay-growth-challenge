@@ -266,6 +266,20 @@ Componente React que va en el root layout. Inicializa el cliente PostHog client-
 
 ---
 
+## 2026-08-30 · Sesión 2 · Bug encontrado — PostCSS sin `postcss-import`
+
+**Síntoma:** landing renderizada sin ningún estilo (links azules default, fondo blanco, tipografía default), aunque el build pasaba limpio y `@tailwind` estaba correctamente declarado.
+
+**Root cause:** `app/globals.css` empieza con `@import "../brand-kit/tokens/tokens.css"` y después `@tailwind base/components/utilities`. PostCSS por default NO inlinea `@import` en tiempo de build — deja el statement crudo, y el browser intenta resolver la ruta relativa desde la ubicación del CSS compilado en `.next/chunks/`, que obviamente no existe. Cuando un `@import` falla, el resto del archivo CSS queda inválido → cero estilos.
+
+**Fix:** agregar `postcss-import` como primer plugin del pipeline en `postcss.config.mjs`. Esto inlinea los `@import` en build time, antes de que Tailwind procese las utilities.
+
+**Trade-off asumido:** dependency extra (1 paquete), pero es la solución canónica y estándar para Next.js. La alternativa hubiese sido copiar el contenido de `tokens.css` dentro de `globals.css`, perdiendo el archivo separado de tokens que ES la fuente que menciona el brand kit.
+
+**Lección para la defensa:** el hook de typecheck no atrapa este tipo de bugs (no son de TS). Un `audit-experience` con browser visual sí lo hubiese atrapado inmediatamente. Vale la pena correr el flow completo en el browser antes de checkpoint, no solo confiar en tipos + build.
+
+---
+
 ## Filosofía de trabajo (recordatorio permanente)
 
 - **No sobreingeniería.** Cumplir lo que pide el challenge, con foco. Cero "por las dudas".
