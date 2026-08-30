@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'file=\"$CLAUDE_FILE_PATH\"; case \"$file\" in *.ts|*.tsx|*.mts|*.cts) cd \"$CLAUDE_PROJECT_DIR\" && npx tsc --noEmit --incremental 2>&1 | grep -E \"error|Error\" | head -20 || echo \"typecheck ok\";; *) exit 0;; esac'",
+            "description": "Run tsc --noEmit after any TS/TSX edit; report errors to Claude."
+          }
+        ]
+      }
+    ]
+  }
+}

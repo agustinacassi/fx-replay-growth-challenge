@@ -1,0 +1,99 @@
+/*
+ * FX Replay — design tokens
+ *
+ * Reconstructed from brand-kit.html + README essentials (Electric Blue #0260FD,
+ * dark-first, Lato + Nunito Sans). The kit references a tokens.css that ships
+ * with the design system in production but wasn't included in the challenge
+ * hand-off — this file replicates its intent: raw primitives + purpose-named
+ * semantic aliases. All product code references semantic tokens.
+ */
+
+:root {
+  /* -------- primitives (raw palette — the only place literal hex lives) -------- */
+
+  /* dark ground */
+  --dark-900: #030303;
+  --dark-800: #0b0b0b;
+  --dark-700: #141414;
+  --dark-600: #1a1a1a;
+  --dark-500: #1c1c1c;
+  --dark-400: #222222;
+
+  /* neutrals */
+  --neutral-50:  #f6f6f6;
+  --neutral-100: #eaeaea;
+  --neutral-200: #d1d1d1;
+  --neutral-300: #b3b3b3;
+  --neutral-400: #888888;
+  --neutral-500: #6a6a6a;
+  --neutral-600: #4a4a4a;
+  --neutral-700: #333333;
+
+  /* brand — Electric Blue */
+  --blue-900: #012054;
+  --blue-800: #013a99;
+  --blue-700: #0247c5;
+  --blue-600: #0260fd;   /* brand */
+  --blue-500: #2c7bfd;
+  --blue-400: #5a97fe;
+  --blue-300: #8fb6fe;
+
+  /* status */
+  --green-500: #22c55e;
+  --amber-500: #f59e0b;
+  --red-500:   #ef4444;
+
+  /* -------- semantic (purpose-named — build with these) -------- */
+
+  /* backgrounds */
+  --bg-primary:      var(--dark-900);
+  --bg-secondary:    var(--dark-800);
+  --bg-tertiary:     var(--dark-700);
+  --bg-elevated:     var(--dark-600);
+  --bg-brand:        var(--blue-600);
+  --bg-brand-hover:  var(--blue-500);
+  --bg-inverse:      var(--neutral-50);
+
+  /* text */
+  --text-primary:    var(--neutral-50);
+  --text-secondary:  var(--neutral-200);
+  --text-tertiary:   var(--neutral-400);
+  --text-inverse:    var(--dark-900);
+  --text-brand:      var(--blue-500);
+  --text-success:    var(--green-500);
+  --text-warning:    var(--amber-500);
+  --text-danger:     var(--red-500);
+
+  /* borders */
+  --border-primary:  var(--dark-500);
+  --border-secondary: var(--dark-400);
+  --border-strong:   var(--neutral-700);
+  --border-brand:    var(--blue-600);
+  --border-danger:   var(--red-500);
+
+  /* buttons */
+  --btn-bg-primary:          var(--blue-600);
+  --btn-bg-primary-hover:    var(--blue-500);
+  --btn-bg-primary-disabled: var(--blue-900);
+  --btn-fg-primary:          var(--neutral-50);
+
+  --btn-bg-secondary:        transparent;
+  --btn-bg-secondary-hover:  var(--dark-700);
+  --btn-fg-secondary:        var(--neutral-50);
+  --btn-border-secondary:    var(--dark-500);
+
+  /* focus */
+  --focus-ring: var(--blue-500);
+
+  /* brand shorthand */
+  --color-brand: var(--blue-600);
+
+  /* fonts — set here so JS/next/font can also read them */
+  --font-heading: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  /* dark-first: the brand is intentionally dark. No light theme in v1. */
+}
