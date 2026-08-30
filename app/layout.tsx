@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Lato, Nunito_Sans } from 'next/font/google'
+import { PostHogProvider } from '@/components/PostHogProvider'
 import './globals.css'
 
 const lato = Lato({
@@ -38,7 +39,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${lato.variable} ${nunito.variable}`}>
-      <body>{children}</body>
+      <body>
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   )
 }

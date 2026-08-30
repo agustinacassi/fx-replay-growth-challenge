@@ -200,6 +200,8 @@ Endpoints:
 
 **Decidido:** repo GitHub **privado** con nombre `fx-replay-growth-challenge`. Al submit se invitan los reviewers como collaborators.
 
+**URL:** https://github.com/agustinacassi/fx-replay-growth-challenge
+
 **Por qué privado:** evita que el trabajo circule antes de la defensa técnica. El challenge no tiene NDA visible pero sí es material sobre auditoría de un producto real de FX Replay.
 
 ### Hook de typecheck automático
@@ -229,6 +231,38 @@ Endpoints:
 - `.claude/settings.local.json` — **gitignored**, permissions personales de Agustina en su máquina.
 
 Convención estándar de Claude Code — evita meter el "allow list" personal en el repo público de deliverables.
+
+---
+
+## 2026-08-30 · Sesión 2 · Analytics infrastructure — arquitectura
+
+Tres archivos que componen la infra de analytics (task 4). NO instrumenta eventos ni define A/B — eso es task 5-8. NO escribe `docs/analytics.md` — eso es task 10.
+
+### `lib/analytics/events.ts` — taxonomy tipada
+Un tipo `Events` que mapea `event_name → props shape` en TypeScript estricto. Es la fuente de verdad de qué eventos existen y qué props lleva cada uno. Si un dev usa un nombre de evento o una prop mal, TS lo rechaza antes de mergear.
+
+### `lib/analytics/track.ts` — wrapper
+Función `track(event, props)` con firma tipada contra `Events`. Manda el evento a PostHog si `NEXT_PUBLIC_POSTHOG_KEY` está configurada, sino hace `console.log('[analytics]', event, props)`. Este fallback permite que el reviewer clone el repo, corra local sin credenciales, y vea la instrumentación disparándose en la consola. Incluye helpers: `identify(userId)` para asociar eventos a un usuario post-signup, `getVariant(flag)` para leer feature flags del A/B.
+
+### `components/PostHogProvider.tsx` — provider
+Componente React que va en el root layout. Inicializa el cliente PostHog client-side según config. Sin este provider, `track()` desde el browser no tiene cliente a quien llamar.
+
+### Por qué esta separación (y no meter lógica de analytics dentro de cada componente)
+- Un solo lugar donde vive "cómo mando un evento" — si mañana cambiamos de PostHog a Segment o Amplitude, se toca 1 archivo.
+- El comando `/add-tracked-event` usa `events.ts` como fuente de verdad — enforce doc/tipo/código en lockstep.
+- El fallback a `console.log` en el wrapper es lo que hace que la instrumentación sea inspectable sin cuenta.
+
+### Configuración PostHog decidida
+
+**Autocapture: OFF.** Solo trackeamos eventos con nombre semántico. Data limpia, funnels precisos. La disciplina de instrumentar todo la sostiene `analytics-guardian` + los tipos de `events.ts`.
+
+**Session replay: OFF.** Ahorra ~50-80kb de JS (impacto CWV) y evita preocupación de privacidad. En prod real lo activaríamos para debugging de drop-off — documentado en `docs/trade-offs.md`.
+
+**Host: US Cloud** (`us.i.posthog.com`). Default, setup más rápido. En prod con audiencia europea evaluaríamos EU Cloud — documentado.
+
+**Consent banner: NO en este scope.** Evita fricción en la landing y protege CWV inicial. En prod con audiencia EU implementaríamos consent vía `posthog.opt_out_capturing()` gate o CMP (Cookiebot) — documentado.
+
+**Trade-off macro asumido:** priorizamos evidencia de instrumentación limpia y funnels precisos sobre coverage automática o compliance formal. En prod real, los 4 defaults elegidos son ajustables env-var-driven sin refactor.
 
 ---
 
