@@ -1,27 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
-/**
- * Initializes the PostHog browser client once, with the configuration decided
- * for this project (see JOURNAL for rationale):
- *
- *  - autocapture: OFF — every event is instrumented explicitly.
- *  - session_recording: OFF — no session replay for scope/CWV/privacy.
- *  - capture_pageview: OFF — we fire named `landing_viewed`/`signup_viewed`/etc
- *    events instead, so the funnel uses semantic names.
- *  - persistence: localStorage+cookie — standard.
- *
- * If `NEXT_PUBLIC_POSTHOG_KEY` is not set, this component is a no-op — the
- * `track()` wrapper falls back to `console.log` transparently.
- */
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
-    if (!key) return
-    if (posthog.__loaded) return
-
+// Initialize at module import (client-only) so the SDK is ready before ANY
+// child component's useEffect runs. Previously init lived inside a useEffect,
+// which meant PageviewTracker's effect (children-first order) called
+// posthog.capture() before init and the events were silently dropped in prod.
+// Fast Refresh masked this in dev by keeping the module warm across renders.
+if (typeof window !== 'undefined') {
+  const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
+  if (key && !posthog.__loaded) {
     posthog.init(key, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
       autocapture: false,
@@ -35,7 +23,14 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         }
       },
     })
-  }, [])
+  }
+}
 
+/**
+ * Passthrough — init is done at module scope above. Kept as a component so
+ * the layout tree structure stays explicit and future providers (feature-flag
+ * context, identity bootstrap) have a home.
+ */
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
