@@ -73,15 +73,6 @@ export function getVariant(flagKey: string, fallback: string = 'control'): strin
 }
 
 /**
- * Clear identity — call on logout or when the user destroys their session.
- * Not used in this scope but exposed for symmetry.
- */
-export function resetIdentity(): void {
-  if (typeof window === 'undefined') return
-  if (isPostHogEnabled()) posthog.reset()
-}
-
-/**
  * True when PostHog should be used as the analytics sink. Intentionally does
  * NOT check `posthog.__loaded` — PostHog's SDK internally queues events fired
  * before init completes and flushes them once loaded. Gating on __loaded here

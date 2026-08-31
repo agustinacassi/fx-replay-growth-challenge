@@ -37,3 +37,15 @@
     }
   }
 }
+
+@layer utilities {
+  /* Hide native scrollbar while keeping scroll functionality — used by
+     carousel-style regions where visual navigation lives in dedicated arrows. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

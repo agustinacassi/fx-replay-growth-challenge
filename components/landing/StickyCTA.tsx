@@ -38,10 +38,10 @@ export function StickyCTA() {
       <CtaLink
         href="/signup"
         location="sticky_nav"
-        label="Start free — no card"
+        label="Start free — no card required"
         className="inline-flex items-center gap-2 bg-brand hover:bg-[color:var(--btn-bg-primary-hover)] text-[color:var(--btn-fg-primary)] font-semibold px-6 py-3 rounded-full shadow-2xl border border-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)]"
       >
-        Start free — no card
+        Start free — no card required
       </CtaLink>
     </div>
   )

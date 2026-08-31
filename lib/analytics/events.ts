@@ -10,9 +10,6 @@
  * compiler.
  */
 
-/** Surface identifiers used across events. */
-export type Surface = 'landing' | 'signup' | 'welcome'
-
 /** Location of a CTA within a surface. */
 export type CtaLocation =
   | 'hero'

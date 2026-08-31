@@ -1,5 +1,5 @@
+import Image from 'next/image'
 import { CtaLink } from '@/components/CtaLink'
-import { ProductMock } from './ProductMock'
 
 export function Hero() {
   return (
@@ -11,18 +11,17 @@ export function Hero() {
           </h1>
           <p className="mt-6 text-lg text-fg-secondary max-w-xl">
             Replay historical forex markets, backtest your setups, and journal
-            every trade — in your first 10 minutes.{' '}
-            <span className="text-fg-primary font-semibold">Free forever. No card.</span>
+            every trade — in your first 10 minutes.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <CtaLink
               href="/signup"
               location="hero"
-              label="Start free — no card"
+              label="Start free — no card required"
               className="inline-flex items-center justify-center bg-brand hover:bg-[color:var(--btn-bg-primary-hover)] text-[color:var(--btn-fg-primary)] font-semibold px-6 py-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg-primary)]"
             >
-              Start free — no card
+              Start free — no card required
             </CtaLink>
             <p className="text-sm text-fg-tertiary">
               Sign up in 30 seconds. Backtest immediately.
@@ -34,18 +33,26 @@ export function Hero() {
             role="list"
             aria-label="Platform highlights"
           >
-            <li>TradingView charts</li>
-            <li aria-hidden="true">·</li>
             <li>120+ assets</li>
             <li aria-hidden="true">·</li>
             <li>20+ years of data</li>
             <li aria-hidden="true">·</li>
-            <li>1M+ traders</li>
+            <li>Trained by 1M+ traders</li>
           </ul>
         </div>
 
         <div className="md:pl-4">
-          <ProductMock />
+          <div className="relative rounded-2xl border border-border bg-bg-secondary overflow-hidden shadow-2xl aspect-[16/10]">
+            <Image
+              src="/product-features/replay-mode.svg"
+              alt="FX Replay chart interface — replay mode showing EUR/USD candles with a simulated trade entry and exit marked."
+              fill
+              sizes="(min-width: 768px) 560px, 100vw"
+              priority
+              unoptimized
+              className="object-cover object-top"
+            />
+          </div>
         </div>
       </div>
     </section>

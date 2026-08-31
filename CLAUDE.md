@@ -99,6 +99,7 @@ The AI-native workflow is not decorative. If you build without invoking these ag
 - **`copy-critic`** — reviews user-visible copy against outcome-oriented, trust-signaling, jargon-free criteria informed by the FX Replay audit.
 - **`a11y-reviewer`** — reviews components/pages for WCAG 2.1 AA (contrast, focus, ARIA, semantic HTML, keyboard nav).
 - **`analytics-guardian`** — verifies every interaction has a `track()` call matching the typed taxonomy, no drift between events.ts and docs/analytics.md.
+- **`perf-seo-reviewer`** — reviews source code for perf + SEO patterns Lighthouse can't see at runtime (client/server boundaries, image + font optimization, third-party scripts, metadata per route, structured data, sitemap/robots).
 
 ### Available commands (see `.claude/commands/`)
 

@@ -26,9 +26,31 @@ const faqs = [
   },
 ]
 
+/**
+ * Structured data — schema.org FAQPage. Lets Google surface these Q&As as
+ * rich-result cards in SERP. Rendered inline so the questions/answers stay
+ * colocated with the visual FAQ (one source of truth).
+ */
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+}
+
 export function FAQ({ variant = 'control' as Variant }: { variant?: Variant }) {
   return (
     <section className="max-w-4xl mx-auto px-6 py-20 md:py-24 border-t border-border-primary/50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <h2 className="text-3xl md:text-4xl font-black leading-tight">
         Straight answers.
       </h2>

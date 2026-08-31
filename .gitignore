@@ -28,5 +28,12 @@ next-env.d.ts
 # claude — personal, per-user overrides. Team-wide config lives in .claude/settings.json (committed).
 .claude/settings.local.json
 
+# personal notes — defense cheat sheets, drafts, anything not meant for the reviewer
+notes/
+
+# private journal — chronological process log with first-person thinking, bug lessons, etc.
+# not for reviewers (docs/architecture.md + docs/trade-offs.md carry the reviewer-facing content).
+JOURNAL.md
+
 # temp
 /tmp/

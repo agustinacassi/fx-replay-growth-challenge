@@ -17,15 +17,16 @@ If the user provided a more specific hint (a file path, a component name), use t
 
 If nothing matches, ask the user to clarify before running the agents.
 
-### 2. Fan out the three agents in parallel
+### 2. Fan out the four agents in parallel
 
-Invoke, in a single message, three subagents using the Agent tool:
+Invoke, in a single message, four subagents using the Agent tool:
 
 1. **`copy-critic`** — pass the list of files in scope. Prompt: "Review all user-visible copy in these files against the growth criteria. Return findings ordered by severity."
 2. **`a11y-reviewer`** — pass the same list. Prompt: "Review these files for WCAG 2.1 AA accessibility. Return findings ordered by severity."
 3. **`analytics-guardian`** — pass the same list. Prompt: "Verify every interaction in these files has instrumentation matching the typed taxonomy. Return missing or drifted events."
+4. **`perf-seo-reviewer`** — pass the same list. Prompt: "Review these files for performance and SEO code patterns Lighthouse cannot see (client/server boundaries, image + font optimization, third-party scripts, metadata per route, structured data, sitemap/robots). Return findings ordered by severity."
 
-Wait for all three to complete.
+Wait for all four to complete.
 
 ### 3. Consolidate the report
 
@@ -40,6 +41,7 @@ Files reviewed: <list>
 - [copy] <finding + location + rewrite>
 - [a11y] <finding + location + fix>
 - [analytics] <finding + location + fix>
+- [perf-seo] <finding + location + fix>
 
 ### Important (should fix)
 - ...
@@ -51,6 +53,7 @@ Files reviewed: <list>
 - Copy: <clean | N findings>
 - A11y: <clean | N findings>
 - Analytics: <clean | N findings>
+- Perf/SEO: <clean | N findings>
 
 ### Suggested next actions
 1. <top priority action>

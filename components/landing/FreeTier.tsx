@@ -42,10 +42,10 @@ export function FreeTier() {
           <CtaLink
             href="/signup"
             location="features"
-            label="Start free — no card"
+            label="Start free — no card required"
             className="mt-8 inline-flex items-center justify-center bg-brand hover:bg-[color:var(--btn-bg-primary-hover)] text-[color:var(--btn-fg-primary)] font-semibold px-6 py-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg-primary)]"
           >
-            Start free — no card
+            Start free — no card required
           </CtaLink>
         </div>
 

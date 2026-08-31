@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -67,11 +68,16 @@ export function Header() {
         <Link
           href="/"
           aria-label="FX Replay — home"
-          className="flex items-center gap-2 flex-none"
+          className="inline-flex items-center flex-none"
         >
-          <span className="font-heading font-black tracking-widest text-sm">
-            FX REPLAY
-          </span>
+          <Image
+            src="/brand/logo.svg"
+            alt="FX Replay"
+            width={120}
+            height={16}
+            priority
+            className="h-auto w-[120px]"
+          />
         </Link>
 
         <nav
