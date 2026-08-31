@@ -35,7 +35,8 @@ export function handleError(err: unknown): NextResponse<ApiErrorBody> {
   if (err instanceof UserNotFoundError) {
     return errorResponse('user_not_found', err.message, 404)
   }
-  const message = err instanceof Error ? err.message : 'Unexpected error'
+  // Never leak the raw error message — it may contain credentials, tokens,
+  // or SDK-internal detail. Log server-side; return a generic envelope.
   console.error('[api] unhandled error', err)
-  return errorResponse('internal_error', message, 500)
+  return errorResponse('internal_error', 'Something went wrong. Please try again.', 500)
 }

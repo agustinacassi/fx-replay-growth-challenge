@@ -14,8 +14,8 @@ let cached: UserStorage | null = null
 export function getStorage(): UserStorage {
   if (cached) return cached
 
-  const token = process.env.NOTION_TOKEN
-  const dbId = process.env.NOTION_SIGNUPS_DB_ID
+  const token = process.env.NOTION_TOKEN?.trim()
+  const dbId = process.env.NOTION_SIGNUPS_DB_ID?.trim()
 
   if (token && dbId) {
     console.info('[storage] using NotionStorage')
