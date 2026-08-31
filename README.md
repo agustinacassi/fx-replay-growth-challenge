@@ -3,7 +3,13 @@
 A production-minded marketing experience — landing, signup, welcome, Users API — designed to increase conversion from marketing traffic to free account creation.
 
 **Repository:** <https://github.com/agustinacassi/fx-replay-growth-challenge>
-**Live deployment:** *(added after Vercel deploy)*
+**Live deployment:** <https://fx-replay-growth-challenge.vercel.app>
+
+Try it in one browser session:
+
+- <https://fx-replay-growth-challenge.vercel.app/?v=control> — verbose landing (control arm).
+- <https://fx-replay-growth-challenge.vercel.app/?v=variant_a> — minimal landing (variant arm).
+- Sign up with any email → land on `/welcome`. Signups persist to a real Notion database.
 
 The submission includes:
 
