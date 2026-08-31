@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fx-replay-growth-challenge.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://fx-replay-growth-challenge.vercel.app'
 
 /**
  * Sitemap for search engines. Only `/` is indexable — `/signup` and `/welcome`

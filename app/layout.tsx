@@ -18,7 +18,7 @@ const nunito = Nunito_Sans({
 })
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://fx-replay-growth-challenge.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://fx-replay-growth-challenge.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
