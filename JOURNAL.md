@@ -280,6 +280,114 @@ Componente React que va en el root layout. Inicializa el cliente PostHog client-
 
 ---
 
+## 2026-08-30 · Sesión 3 · Notion end-to-end funcionando (con bug + fix)
+
+### Bug encontrado — `NOTION_SIGNUPS_DB_ID` con el ID equivocado
+
+**Síntoma:** después de wire completo (integration creada + conectada a la página + token en `.env.local`), la Users API respondía `500` con el mensaje de Notion: *"Could not find database with ID: a00ce3c6-... Make sure the relevant pages and databases are shared with your integration."*
+
+Confuso porque el mensaje sugería un problema de permisos — pero los permisos estaban bien (verificado en la UI de Notion). El root cause era otro.
+
+**Root cause:** Notion tiene DOS identificadores distintos para una database:
+- **Block/database ID** — el que aparece en la URL cuando abrís la database (`https://app.notion.com/p/<ID>`) y el que el SDK oficial `@notionhq/client` espera en `parent.database_id`.
+- **Data source / collection ID** — el que usa el sistema interno de Notion para el modelo nuevo de colecciones, y el que el MCP devuelve como `collection://<ID>` al crear la DB.
+
+Cuando creamos la DB vía MCP, copié el data source ID (`a00ce3c6-...`) al `.env.local` en vez del block ID (`f39288dd-...`). La query del SDK con ese ID tira "cannot find database".
+
+**Fix:** cambiar `NOTION_SIGNUPS_DB_ID` en `.env.local` (via `sed`, sin exponer keys) al block ID correcto: `f39288dd-c29a-461e-91f6-f89910326a7e`. Actualizar también `.env.example`.
+
+**Verificación:** signup con `agustina@fx.com` → row aparece en la Notion DB → confirmado vía MCP query.
+
+**Lección para la defensa:** el mensaje de error de Notion es engañoso — dice "asegurate que la integración tenga acceso" cuando en realidad el ID es inválido. En prod agregar un check al arranque del server (`getStorage()`) que valide el schema/existencia de la DB con un test query y falle rápido con mensaje claro. Nota para trade-offs.
+
+**End-to-end validado:**
+- Landing loads ✅
+- CTA click → /signup ✅
+- Signup form submits → POST /api/users → 201 ✅
+- Row aparece en Notion con Email/Name/Provider/Variant/Created ✅
+- Redirect a /welcome con user_id en URL ✅
+- Welcome page renderiza con el data del usuario ✅
+
+---
+
+## 2026-08-30 · Sesión 3 · PostHog verificado + CLAUDE.md reforzado
+
+### PostHog — 401 inicial era artefacto de estado viejo
+
+**Síntoma:** browser console mostraba `[PostHog.js] Bad HTTP status: 401 — authentication_failed`.
+
+**Diagnóstico vía CLI:**
+- Test del endpoint `/capture/` con la key actual → HTTP 200, `{"status":"Ok"}`.
+- Test del endpoint `/decide/?v=3` con la key actual → HTTP 200, `{"featureFlags":{}}` (esperado, sin flags creados aún).
+
+**Conclusión:** la key es válida y la config está OK. El 401 que vimos era un error viejo persistiendo en la consola del browser — probablemente de un intento previo con la key mal pegada o antes del restart del dev server. La consola de DevTools no auto-limpia.
+
+**Verificación end-to-end del lado usuario:**
+- Hard-refresh (Cmd+Shift+R) para limpiar bundle cached + errores viejos.
+- Check en PostHog dashboard → Activity / Live events → deberían verse los eventos disparados (`landing_viewed`, `cta_clicked`, `signup_*`, `welcome_viewed`, `identify`).
+
+### Bug secundario encontrado — race condition en el pageview
+
+**Síntoma:** después del fix del 401, el primer evento del funnel (`landing_viewed`) seguía cayendo al fallback `console.log('[analytics]', ...)` en lugar de PostHog. Los eventos posteriores sí llegaban a PostHog.
+
+**Root cause:** React monta los `useEffect` de abajo hacia arriba. `PageviewTracker` (hijo del layout) fira `track('landing_viewed')` ANTES de que `PostHogProvider` (padre) ejecute `posthog.init()`. En ese momento, `posthog.__loaded` es `false` y nuestro `isPostHogEnabled()` caía al fallback.
+
+**Fix:** sacar el check de `posthog.__loaded` en `isPostHogEnabled()`. PostHog SDK internamente bufferea eventos disparados antes de init y los flushea cuando termina de cargar. Nuestro check era over-defensive y rompía el paso 1 del funnel.
+
+**Lección:** cuidado con checks de "está listo?" cuando el SDK ya maneja queueing internamente. Confiar en el SDK a menos que haya evidencia clara de que no lo hace.
+
+**Config PostHog en producción:** US Cloud, autocapture off, session replay off, capture_pageview off (usamos pageview events con nombres semánticos). Feature flags vacíos hasta que creemos `landing_hero_copy` en task 8.
+
+---
+
+### CLAUDE.md reforzado — de "invocá cuando quieras" a "MUST invocar"
+
+**Problema detectado por Agustina:** durante las sesiones 1-2 no invoqué agents (`copy-critic`, `a11y-reviewer`, `analytics-guardian`) ni commands (`/add-tracked-event`, `/audit-experience`) al construir landing/signup/welcome. Los agents existían pero nunca se ejercitaron. El "sistema alrededor de AI" quedó armado pero no operativo.
+
+**Cambios aplicados a `CLAUDE.md`:**
+
+1. **Sección "Agents, commands, and mandatory invocation rules"** reemplaza a la vieja "Agents and skills":
+   - Reglas numeradas con lenguaje imperativo (`MUST`, `non-negotiable`).
+   - 4 reglas atadas a eventos concretos verificables:
+     - Antes de `TaskUpdate` a `completed` en tarea UI → invocar `/audit-experience`.
+     - Antes de agregar evento a `events.ts` → invocar `/add-tracked-event`.
+     - Antes de escribir copy user-visible → invocar `copy-critic`.
+     - NO invocar agents para trabajo trivial.
+   - Self-check obligatorio que Claude debe outputear en el mensaje antes de mark complete.
+   - Instrucción explícita para cuando detecta que se saltó una regla: "detenerse, admitir, corregir retroactivamente".
+
+2. **"Definition of done per feature" reforzada:** ahora obliga a outputear el checklist en la respuesta (no chequearlo mentalmente). Si algún item queda sin tildar en tarea UI, la task NO está done.
+
+**Por qué no usar un hook automático:** los hooks pueden interceptar tools pero no pueden forzar invocación de agents (los agents son sub-Claude calls). El único mecanismo confiable es hacer visible el checklist en el output — así Agustina también puede reclamarlo si me salto una regla.
+
+**Trade-off asumido:** el sistema depende de disciplina de Claude + supervisión de Agustina. En prod real con un equipo, agregaríamos revisión humana obligatoria vía PR checks (GitHub actions que corren los agents automáticamente en cada PR). Documentado como próximo paso en trade-offs.
+
+**Deuda pendiente:** `/audit-experience` retroactivo sobre landing/signup/welcome, para aplicar los findings sobre lo ya construido. Ejecutar en la próxima sesión.
+
+---
+
+## 2026-08-30 · Sesión 3 · Bug conocido de Next.js 15.5.x — devtools RSC manifest
+
+**Síntoma:** después de editar múltiples componentes cliente en la misma sesión de dev, GET `/` → 500 Internal Server Error. Console del browser: `Uncaught Error: Minified React error #418` (hydration mismatch). Terminal del server:
+```
+Error: Could not find the module ".../node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+```
+
+**Root cause:** bug interno de Next.js 15.5.x en su infra de dev-devtools (React Server Components manifest se desincroniza). El archivo `segment-explorer-node.js` es parte de las devtools internas de Next, no de nuestro código. El propio mensaje de error dice "This is probably a bug in the React Server Components bundler."
+
+**Fix que probamos:**
+1. `npm run clean` (rm .next + node_modules/.cache) — **NO** alcanzó.
+2. Nuclear: `rm -rf .next node_modules package-lock.json && npm install` — **SÍ** resolvió.
+
+**Recomendación para el futuro:** si vuelve a aparecer, ir directo al nuclear clean. Alternativa a considerar en trade-offs: pin Next.js a 15.4.x (versión estable sin este bug) si vuelve a impactar productividad.
+
+**Lección para la defensa:** la mayor parte del debugging de esta sesión fue en tooling (Notion IDs, PostHog race conditions, este bug de Next dev), no en lógica de negocio. En un producto real, esto se mitiga con:
+- CI que corre `npm ci` en cada PR (equivalent a nuclear clean, atrapa este bug antes del deploy).
+- Deploy previews en Vercel que hacen build limpio siempre.
+- Alertas de Sentry/Datadog que muestran errores del bundler en prod.
+
+---
+
 ## Filosofía de trabajo (recordatorio permanente)
 
 - **No sobreingeniería.** Cumplir lo que pide el challenge, con foco. Cero "por las dudas".

@@ -2,20 +2,28 @@ import { CtaLink } from '@/components/CtaLink'
 
 const bullets = [
   {
+    title: 'Forex, metals, and major indexes',
+    body: 'EURUSD, XAUUSD, SPX500, NAS100, and more.',
+  },
+  {
     title: '2 backtesting sessions',
     body: 'Test any strategy on real market data.',
   },
   {
-    title: '1 technical indicator',
-    body: 'SMA, EMA, RSI — your pick.',
+    title: '1 indicator per session',
+    body: 'SMA, EMA, RSI, Williams Fractal, and others.',
   },
   {
     title: '1 week of historical data',
     body: 'Per session, at any timeframe.',
   },
   {
-    title: 'Trade journal',
-    body: 'Review your decisions and outcomes.',
+    title: '50 trades per session',
+    body: 'Enough to spot patterns and validate your edge.',
+  },
+  {
+    title: 'Trade journal + TradingView charts',
+    body: 'The same tools pro traders use.',
   },
 ]
 
@@ -28,8 +36,8 @@ export function FreeTier() {
             What you get, free.
           </h2>
           <p className="mt-6 text-fg-secondary">
-            No credit card. Never expires. No auto-billing. Upgrade whenever —
-            never on signup.
+            Genuinely free — no credit card, no trial period, no automatic
+            conversion. You keep access <span className="text-fg-primary font-semibold">indefinitely</span>.
           </p>
           <CtaLink
             href="/signup"

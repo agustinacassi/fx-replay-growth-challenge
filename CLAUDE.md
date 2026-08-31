@@ -90,30 +90,59 @@ To add a new event, use the `/add-tracked-event` command — it updates `events.
 
 The taxonomy in `docs/analytics.md` is the single source of truth. If a discrepancy is found between doc and code, doc wins — update code to match.
 
-## Agents and skills — when to invoke
+## Agents, commands, and mandatory invocation rules
 
-Available agents (see `.claude/agents/`):
+The AI-native workflow is not decorative. If you build without invoking these agents/commands at the right moments, you're duplicating the work by hand instead of using the system that was designed to prevent typical growth-engineering failure modes. Follow these rules literally.
 
-- **`copy-critic`** — invoke after writing or editing any user-visible copy (headlines, CTAs, error messages, empty states, welcome copy). Reviews against outcome-oriented, trust-signaling, jargon-free criteria informed by the FX Replay audit.
-- **`a11y-reviewer`** — invoke after completing a component or page. Reviews contrast, focus order, ARIA, keyboard navigation, semantic HTML, form labels.
-- **`analytics-guardian`** — invoke after adding or modifying user interactions. Verifies every new interactive element has a corresponding `track()` call and that the props match the typed taxonomy.
+### Available agents (see `.claude/agents/`)
 
-Available commands (see `.claude/commands/`):
+- **`copy-critic`** — reviews user-visible copy against outcome-oriented, trust-signaling, jargon-free criteria informed by the FX Replay audit.
+- **`a11y-reviewer`** — reviews components/pages for WCAG 2.1 AA (contrast, focus, ARIA, semantic HTML, keyboard nav).
+- **`analytics-guardian`** — verifies every interaction has a `track()` call matching the typed taxonomy, no drift between events.ts and docs/analytics.md.
 
-- **`/add-tracked-event`** — add a new analytics event. Updates the type, the doc, and shows the instrumentation snippet.
-- **`/audit-experience surface=<landing|signup|welcome>`** — run all three agents in parallel against a surface and consolidate findings into one report.
+### Available commands (see `.claude/commands/`)
 
-**Guideline**: don't invoke agents for trivial work (typos, one-line fixes). Invoke them at feature-close: after landing hero is done, after signup form is done, after welcome page is done.
+- **`/add-tracked-event`** — the ONLY way to add a new analytics event. Updates the type, the doc row, and shows the instrumentation snippet.
+- **`/audit-experience surface=<landing|signup|welcome>`** — fans out the 3 agents in parallel over a surface and returns a consolidated report by severity.
+- **`/checkpoint`** — quality-gates a commit (typecheck + lint) and creates a conventional-commit message.
+
+### Mandatory invocation rules (non-negotiable)
+
+These are triggered by specific events. Skipping them means the "system around AI" doesn't exist in practice.
+
+1. **Before marking any UI-related task as `completed` via `TaskUpdate`** (tasks that build or modify `app/**`, `components/**`, or CSS): you MUST first invoke `/audit-experience surface=<name>` in the same turn and either apply the findings or explicitly document why you rejected them in `docs/trade-offs.md`. State in your output which findings were applied and which were deferred.
+
+2. **Before adding any new event to `lib/analytics/events.ts`**: you MUST invoke `/add-tracked-event` (do not hand-edit the file). This is the only way to keep the type + `docs/analytics.md` row + instrumentation snippet in lockstep.
+
+3. **Before writing any user-visible copy that will ship** (headlines, subheadlines, CTAs longer than one word, error messages, empty states, form labels, FAQ, welcome content): invoke `copy-critic` on the finished copy and apply the critical + important findings. Minor findings can be deferred; document what and why.
+
+4. **Do NOT invoke agents for trivial work** — typos, one-line style fixes, refactors that don't change user-visible surface, config edits. Reserve them for feature-close moments.
+
+### Self-check before every `TaskUpdate` to `completed` on a UI task
+
+Ask yourself and OUTPUT the answer:
+- Did I run `/audit-experience surface=<x>` this turn?
+- Are all events I added/modified passing through `/add-tracked-event`?
+- Did I run `copy-critic` on any new user-visible copy?
+
+If any answer is "no" and the task involves UI, DO NOT mark it complete. Run the missing step first.
+
+### When you notice you skipped a rule mid-flow
+
+Stop, acknowledge it in your response, run the missed step retroactively, and keep going. Do not silently proceed as if the rule doesn't apply.
 
 ## Definition of done per feature
 
-Before considering a feature complete:
-- [ ] All user-visible copy passed through `copy-critic`.
-- [ ] Component/page passed through `a11y-reviewer`.
-- [ ] Every interaction tracked via `/add-tracked-event`, verified by `analytics-guardian`.
+**You must OUTPUT this checklist and its answers before calling `TaskUpdate` to mark any UI task as `completed`.** Not checking it in your head — writing it in the response.
+
+- [ ] `/audit-experience surface=<x>` was invoked this turn — findings applied or documented.
+- [ ] Every new event went through `/add-tracked-event` (not hand-edited into events.ts).
+- [ ] `copy-critic` was invoked on any new user-visible copy — critical + important findings applied.
 - [ ] Responsive at 375px, 768px, 1280px (spot-check, not exhaustive).
 - [ ] Uses brand kit tokens exclusively — no raw hex, no non-brand fonts.
 - [ ] Any accepted limitation (finding you chose not to fix) documented in `docs/trade-offs.md`.
+
+If any check is unchecked and the task involves UI, the task is NOT done. Do the missing step first.
 
 ## Reference documents
 

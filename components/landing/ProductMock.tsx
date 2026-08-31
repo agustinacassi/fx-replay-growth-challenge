@@ -12,7 +12,7 @@ export function ProductMock() {
     <div
       className="relative rounded-2xl border border-border bg-bg-secondary p-4 md:p-6 shadow-2xl overflow-hidden"
       role="img"
-      aria-label="Illustration: EUR/USD chart with a simulated backtest trade marked entry and exit."
+      aria-label="Illustration: EUR/USD H1 chart with a simulated backtest trade — entry at 1.0842, exit at 1.0938, +96 pips. Session 1 of 2, backtest run in 4 minutes 32 seconds."
     >
       {/* Top bar — pair + timeframe + faux controls */}
       <div className="flex items-center gap-3 text-xs font-mono text-fg-secondary mb-4">

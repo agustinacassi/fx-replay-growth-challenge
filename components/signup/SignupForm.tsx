@@ -55,7 +55,7 @@ export function SignupForm({ variant = 'control' }: Props) {
     if (!email.trim()) localErrors.email = 'Email is required.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
       localErrors.email = 'Enter a valid email address.'
-    if (!name.trim()) localErrors.name = 'Your name is required.'
+    if (!name.trim()) localErrors.name = 'Add your name.'
 
     if (Object.keys(localErrors).length > 0) {
       setFieldErrors(localErrors)
@@ -66,6 +66,8 @@ export function SignupForm({ variant = 'control' }: Props) {
         error_code: 'validation_error',
         stage: 'validation',
       })
+      // Match voice used elsewhere — direct, second-person.
+      // (Field-level messages are shown via <p role="alert">; no additional wiring here.)
       return
     }
 
@@ -161,7 +163,7 @@ export function SignupForm({ variant = 'control' }: Props) {
         className="w-full inline-flex items-center justify-center gap-3 rounded-lg border border-border-primary bg-bg-secondary hover:bg-bg-tertiary text-fg-primary font-semibold px-5 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)]"
       >
         <GoogleGlyph />
-        {loading === 'google' ? 'Signing you in…' : 'Continue with Google'}
+        {loading === 'google' ? 'Signing you in…' : 'Start with Google'}
       </button>
 
       <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-fg-tertiary">
@@ -175,7 +177,7 @@ export function SignupForm({ variant = 'control' }: Props) {
           htmlFor={emailId}
           className="block text-sm font-semibold text-fg-secondary mb-1.5"
         >
-          Email
+          Email <span className="font-normal text-fg-tertiary">(required)</span>
         </label>
         <input
           id={emailId}
@@ -204,7 +206,7 @@ export function SignupForm({ variant = 'control' }: Props) {
           htmlFor={nameId}
           className="block text-sm font-semibold text-fg-secondary mb-1.5"
         >
-          Your name
+          Name <span className="font-normal text-fg-tertiary">(required)</span>
         </label>
         <input
           id={nameId}
@@ -238,12 +240,18 @@ export function SignupForm({ variant = 'control' }: Props) {
         disabled={busy}
         className="w-full inline-flex items-center justify-center bg-brand hover:bg-[color:var(--btn-bg-primary-hover)] text-[color:var(--btn-fg-primary)] font-semibold px-5 py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg-primary)]"
       >
-        {loading === 'email' ? 'Creating your account…' : 'Continue with email'}
+        {loading === 'email' ? 'Creating your account…' : 'Start backtesting'}
       </button>
 
       <p className="text-xs text-fg-tertiary text-center">
-        By continuing you agree to our terms. No card. No auto-billing. Ever.
+        By continuing you agree to our terms. No card, now or later.
       </p>
+
+      {/* Live region for async status — silent to sighted users, announced to SR. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {loading === 'email' && 'Creating your account. Please wait.'}
+        {loading === 'google' && 'Signing you in with Google. Please wait.'}
+      </div>
     </form>
   )
 }

@@ -81,6 +81,14 @@ export function resetIdentity(): void {
   if (isPostHogEnabled()) posthog.reset()
 }
 
+/**
+ * True when PostHog should be used as the analytics sink. Intentionally does
+ * NOT check `posthog.__loaded` — PostHog's SDK internally queues events fired
+ * before init completes and flushes them once loaded. Gating on __loaded here
+ * caused the first pageview event to fall to the console fallback because the
+ * child (PageviewTracker) mounts and fires before the parent Provider's init
+ * useEffect runs.
+ */
 function isPostHogEnabled(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY) && Boolean(posthog.__loaded)
+  return Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY)
 }

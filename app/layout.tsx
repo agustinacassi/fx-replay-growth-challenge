@@ -40,6 +40,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${lato.variable} ${nunito.variable}`}>
       <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-[color:var(--bg-elevated)] focus:text-[color:var(--text-primary)] focus:px-4 focus:py-2 focus:rounded focus:outline-none focus:ring-2 focus:ring-[color:var(--focus-ring)]"
+        >
+          Skip to content
+        </a>
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>

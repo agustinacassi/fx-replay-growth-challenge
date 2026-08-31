@@ -28,6 +28,20 @@ export function Hero() {
               Sign up in 30 seconds. Backtest immediately.
             </p>
           </div>
+
+          <ul
+            className="mt-8 flex flex-wrap gap-x-4 gap-y-2 text-xs text-fg-tertiary font-mono uppercase tracking-wider"
+            role="list"
+            aria-label="Platform highlights"
+          >
+            <li>TradingView charts</li>
+            <li aria-hidden="true">·</li>
+            <li>120+ assets</li>
+            <li aria-hidden="true">·</li>
+            <li>20+ years of data</li>
+            <li aria-hidden="true">·</li>
+            <li>1M+ traders</li>
+          </ul>
         </div>
 
         <div className="md:pl-4">

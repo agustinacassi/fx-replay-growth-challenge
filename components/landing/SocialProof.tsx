@@ -23,11 +23,10 @@ export function SocialProof() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-20 md:py-24 border-t border-border-primary/50">
       <h2 className="text-3xl md:text-4xl font-black leading-tight max-w-2xl">
-        Traders build skill here.
+        1,000,000+ traders sharpened their edge here first.
       </h2>
-      <p className="mt-4 text-fg-secondary">
-        <span className="text-fg-primary font-semibold">Over 1 million traders</span>{' '}
-        use FX Replay to accelerate their development before going live.
+      <p className="mt-4 text-fg-secondary max-w-2xl">
+        Practice on real markets before putting real money on the line.
       </p>
 
       <ul

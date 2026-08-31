@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 }
 
 const trustBullets = [
-  'No credit card required.',
-  'Free tier never expires.',
-  'No auto-billing. Ever.',
-  'Cancel is nothing to cancel — it’s just free.',
+  'Free tier is forever free. No end date.',
+  'Real TradingView charts.',
+  '120+ assets, historical data since 2003.',
+  'Backtest in the browser — no install.',
 ]
 
 /**
@@ -31,6 +31,7 @@ export default function SignupPage() {
       <Header />
       <main
         id="main"
+        tabIndex={-1}
         className="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-[1fr_minmax(0,420px)] gap-12 md:gap-20 items-start"
       >
         <div>
@@ -38,8 +39,7 @@ export default function SignupPage() {
             Start practicing in 30 seconds.
           </h1>
           <p className="mt-4 text-fg-secondary max-w-md">
-            One step. No card. No pricing to pick. You’ll be backtesting your
-            first strategy the moment you sign in.
+            One step. No card. Your first backtest is 30 seconds away.
           </p>
 
           <ul className="mt-10 space-y-3 text-sm text-fg-secondary max-w-md" role="list">

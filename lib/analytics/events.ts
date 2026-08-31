@@ -14,7 +14,14 @@
 export type Surface = 'landing' | 'signup' | 'welcome'
 
 /** Location of a CTA within a surface. */
-export type CtaLocation = 'hero' | 'sticky_nav' | 'features' | 'footer' | 'inline'
+export type CtaLocation =
+  | 'hero'
+  | 'sticky_nav'
+  | 'features'
+  | 'footer'
+  | 'inline'
+  | 'header_secondary' // "Sign in" link in the header
+  | 'header_cta' // "Get Started" primary button in the header
 
 /** How the user signed up. */
 export type Provider = 'email' | 'google'
@@ -101,6 +108,13 @@ export type Events = {
   experiment_variant_assigned: {
     flag_key: string
     variant: string
+  }
+
+  /** Fired when the user opens or closes a FAQ item on the landing. */
+  faq_toggled: {
+    question: string
+    opened: boolean
+    variant: Variant
   }
 }
 

@@ -1,6 +1,7 @@
 import { Header } from '@/components/landing/Header'
 import { Hero } from '@/components/landing/Hero'
 import { HowItWorks } from '@/components/landing/HowItWorks'
+import { Features } from '@/components/landing/Features'
 import { FreeTier } from '@/components/landing/FreeTier'
 import { SocialProof } from '@/components/landing/SocialProof'
 import { FAQ } from '@/components/landing/FAQ'
@@ -25,11 +26,12 @@ export default function LandingPage() {
     <>
       <PageviewTracker variant={variant} />
       <Header />
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <Hero />
         {/* Sentinel — StickyCTA observes this to know when the hero has scrolled off. */}
         <div id="hero-sentinel" aria-hidden="true" />
         <HowItWorks />
+        <Features />
         <FreeTier />
         <SocialProof />
         <section id="faq">

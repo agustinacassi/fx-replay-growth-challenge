@@ -7,7 +7,7 @@ const steps = [
   {
     n: '2',
     title: 'Pick a session.',
-    body: 'Choose a currency pair and a period from real historical data.',
+    body: 'Choose from forex, metals, indexes, and more — real historical data going back to 2003, any timeframe from 1-minute to monthly.',
   },
   {
     n: '3',
