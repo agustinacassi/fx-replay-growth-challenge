@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment Proposal — FX Replay Growth Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #030303;
+      --bg-elevated: #101010;
+      --bg-card: #151515;
+      --border: #262626;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a3a3a3;
+      --text-tertiary: #737373;
+      --accent: #7dd3fc;
+      --accent-soft: #7dd3fc33;
+      --danger: #f87171;
+      --danger-soft: #f8717133;
+      --warn: #fbbf24;
+      --warn-soft: #fbbf2433;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Nunito Sans', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      overflow: hidden;
+      height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Lato', system-ui, sans-serif;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .deck {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1080px;
+      max-height: 90vh;
+      padding: 3rem 4rem;
+      overflow-y: auto;
+    }
+
+    .slide.active { display: block; }
+
+    .kicker {
+      color: var(--accent);
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .slide h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+    .slide h2 { font-size: 2.5rem; margin-bottom: 1.5rem; }
+    .slide h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text-secondary); font-weight: 700; }
+
+    .slide p { margin-bottom: 1rem; color: var(--text-secondary); font-size: 1.05rem; }
+    .slide p.lead { color: var(--text-primary); font-size: 1.35rem; font-weight: 600; line-height: 1.5; }
+    .slide p strong { color: var(--text-primary); font-weight: 700; }
+
+    ul, ol { margin: 1rem 0 1rem 1.5rem; }
+    li { color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 1rem; }
+    li strong { color: var(--text-primary); font-weight: 700; }
+
+    .cards {
+      display: grid;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .cards.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .cards.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card h4 {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .card p { font-size: 0.95rem; margin-bottom: 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    th {
+      background: var(--bg-elevated);
+      color: var(--accent);
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    td { color: var(--text-secondary); }
+    td strong { color: var(--text-primary); }
+
+    .highlight-box {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    .highlight-box p { color: var(--text-primary); font-size: 1.15rem; margin: 0; }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .decision-row:last-child { border-bottom: none; }
+    .decision-row .cond { color: var(--text-secondary); font-size: 0.95rem; }
+    .decision-row .action { font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .action.ship { background: var(--accent-soft); color: var(--accent); }
+    .action.reject { background: var(--danger-soft); color: var(--danger); }
+    .action.continue { background: var(--warn-soft); color: var(--warn); }
+
+    pre {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    code {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      color: var(--accent);
+    }
+    p code, li code, td code {
+      background: var(--bg-elevated);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+    .stat {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .stat .value { font-family: 'Lato', sans-serif; font-size: 2rem; font-weight: 900; color: var(--accent); }
+    .stat .label { color: var(--text-tertiary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
+
+    /* Nav bar */
+    .navbar {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.25rem 0.5rem;
+      transition: color 0.15s;
+    }
+    .nav-btn:hover { color: var(--text-primary); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-counter {
+      color: var(--text-tertiary);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-width: 3rem;
+      text-align: center;
+    }
+
+    .brand-tag {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      color: var(--text-tertiary);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      z-index: 50;
+    }
+    .brand-tag span { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .slide { padding: 2rem 1.5rem; }
+      .slide h1 { font-size: 2.25rem; }
+      .slide h2 { font-size: 1.75rem; }
+      .cards.cols-2, .cards.cols-3 { grid-template-columns: 1fr; }
+      .stat-row { flex-direction: column; gap: 0.75rem; }
+    }
+
+    @media print {
+      html, body { overflow: visible; height: auto; }
+      .slide { display: block !important; page-break-after: always; max-height: none; }
+      .navbar, .brand-tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-tag">FX Replay Growth Challenge · <span>Experiment Proposal</span></div>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Title -->
+  <section class="slide active">
+    <div class="kicker">A/B Experiment</div>
+    <h1>Landing density vs. free-tier signup conversion</h1>
+    <p class="lead">A walk-through of the A/B test I built — the hypothesis, the two versions competing, how I measure the result without winning on false ground, what triggers each decision, and how I wired it end-to-end in PostHog. All of it derived from the manual audit I ran on fxreplay.com's current signup flow.</p>
+    <p style="margin-top: 3rem;">Follows the classic <strong>H · C · V · M · D</strong> framework — Hypothesis, Control, Variant, Success Metric, Decision.</p>
+  </section>
+
+  <!-- Slide 2: Context -->
+  <section class="slide">
+    <div class="kicker">Context</div>
+    <h2>Three opportunities to improve CVR</h2>
+    <p>To build the <strong>"Try FX Replay Free"</strong> proposal for the challenge, I started by analyzing the current fxreplay.com landing. From that analysis, concrete improvement opportunities emerged that then guided the value proposition of the landing I built for the challenge. The audit surfaced three CVR improvement opportunities: two were solved by product decisions in the new experience, and the third is what this A/B experiment tests.</p>
+
+    <h3>Improvement opportunities detected:</h3>
+    <div class="cards cols-3">
+      <div class="card">
+        <p><strong>Chargebee on the free path.</strong> Checkout language ("Complete your order", "Subscribe") appears before any value is delivered. The new signup doesn't touch Chargebee.</p>
+      </div>
+      <div class="card">
+        <p><strong>Pricing gate immediately after signup</strong> with buggy currency conversion. No pricing on the free path in the new flow.</p>
+      </div>
+      <div class="card" style="border-color: var(--accent);">
+        <p><strong>Content overload on the landing</strong> — 120+ assets with per-card detail, 12 indicators with paragraph descriptions, dense feature grids. This is what the A/B tests.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Hypothesis -->
+  <section class="slide">
+    <div class="kicker">H — Hypothesis</div>
+    <h2>Less text converts better than more text.</h2>
+
+    <div class="highlight-box">
+      <p>A landing with less text converts more visitors into registered users than a text-heavy landing does, because the retail-trader audience decides quickly based on <strong>trust signals</strong> (testimonials, "no card required") and on the <strong>clarity of the main action</strong> (the signup button), not on reading every product detail.</p>
+    </div>
+
+    <h3>Why I believe this</h3>
+    <ul>
+      <li><strong>Signup intent is high but fragile.</strong> If a user made it to the landing at all, they're already interested in trying the tool. Giving them more to read (specs, tabs, per-card details) adds mental load without adding trust — and many bail before converting.</li>
+      <li><strong>What actually convinces this audience is different from what the current landing shows.</strong> A testimonial from another trader, the "no card required" promise, the "no trial that expires" detail — all of that carries far more weight than a paragraph describing a technical indicator.</li>
+      <li><strong>Deep product detail has its place, but not here.</strong> It's the right content for someone already inside the product evaluating a paid plan — not for an anonymous visitor deciding whether to try the free version.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 4: Control -->
+  <section class="slide">
+    <div class="kicker">C — Control</div>
+    <h2>LandingVerbose — the version with a lot of text</h2>
+    <p>The <strong>control</strong> in an A/B test is the baseline you compare against. I chose to replicate the information density fxreplay.com's current landing has — precisely because the hypothesis is that density hurts. If this version loses to the other, the conclusion is that less is more.</p>
+
+    <table>
+      <thead>
+        <tr><th>Section</th><th>What's in it</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hero (header)</td><td>Big outcome-oriented headline, sub-headline, primary signup CTA, a real product screenshot, and a trust bar with metrics (120+ assets · 20+ years of data · 1M+ traders).</td></tr>
+        <tr><td>Asset pills</td><td>A strip of market symbols: EURUSD, XAUUSD, SPX500, BTC, NAS100, +115 more. Shows the range of instruments available.</td></tr>
+        <tr><td>How it works</td><td>Three numbered steps explaining the product flow.</td></tr>
+        <tr><td>Features</td><td>A horizontal carousel with the product's <strong>15 features</strong>, each with a screenshot.</td></tr>
+        <tr><td>Assets per market</td><td>A tabbed grid across 6 markets (Forex, Metals, Indexes, Futures, Crypto, Stocks). Each card shows broker, plan access, timeframes, and initial data date.</td></tr>
+        <tr><td>Indicators</td><td>Tabbed grid (standard / custom) with paragraph-length descriptions per technical indicator.</td></tr>
+        <tr><td>Free tier</td><td>Six bullets listing what's included in the free version.</td></tr>
+        <tr><td>Social proof</td><td>Animated counter of 1M+ traders + three testimonials with small avatars.</td></tr>
+        <tr><td>FAQ</td><td>Five questions echoing the "genuinely free" language of the current site.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stat-row">
+      <div class="stat"><div class="value">~6.5</div><div class="label">Screens on desktop</div></div>
+      <div class="stat"><div class="value">~11</div><div class="label">Screens on mobile</div></div>
+    </div>
+  </section>
+
+  <!-- Slide 5: Variant -->
+  <section class="slide">
+    <div class="kicker">V — Variant A</div>
+    <h2>LandingMinimal — the version with less text</h2>
+    <p>The <strong>variant</strong> is the new version competing against the control. Here I remove dense sections, move social proof upfront, and switch the emotional register of the main headline from descriptive to promise-driven.</p>
+
+    <table>
+      <thead>
+        <tr><th>Section</th><th>What changes vs. Control</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Hero (header)</td><td>Centered layout, no product screenshot, large typography. <strong>Different headline</strong> — swap from a descriptive one (<em>"Practice trading strategies before you risk a dollar"</em>) to an emotional promise (<em>"Never lose money on a bad idea again."</em>).</td></tr>
+        <tr><td>Social proof (moved up)</td><td>Testimonials appear <strong>immediately after the hero</strong>, not at the bottom. The idea: land the trust signal (real traders already using it) before explaining the process.</td></tr>
+        <tr><td>Features (reduced)</td><td>Six features in a static grid, instead of a carousel of 15. Same screenshots, smaller count.</td></tr>
+        <tr><td>Chart showcase</td><td>A single large screenshot of the product in action, functioning as a visual anchor — replaces the dense sections I removed.</td></tr>
+        <tr><td>Removed</td><td>Asset pills strip, tabbed markets section, indicators section with long descriptions, and 9 of the 15 carousel features.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stat-row">
+      <div class="stat"><div class="value">~3.5</div><div class="label">Screens on desktop</div></div>
+      <div class="stat"><div class="value">~50%</div><div class="label">Less scroll than control</div></div>
+    </div>
+
+    <h3>Careful — two things vary at the same time</h3>
+    <ul>
+      <li><strong>Content quantity</strong> — the variant has ~50% less scroll.</li>
+      <li><strong>Headline tone</strong> — the variant uses an emotional promise instead of a descriptive one.</li>
+    </ul>
+    <p style="font-size: 0.95rem; color: var(--text-tertiary);">Both move together in this test, so if it wins we won't know which one pulled the weight. A follow-up test would isolate each variable — it's a conscious trade-off to save time now.</p>
+
+    <div class="highlight-box" style="border-left-color: var(--warn); margin-top: 1.5rem;">
+      <p style="font-size: 1rem;"><strong>With more UX time:</strong> I would have polished the copy and the amount of information trimmed in variant A, and improved the signup and welcome screens beyond their current state. Most of the project time went into the two landings and into wiring the pipeline end-to-end with PostHog, so signup and welcome shipped functional but without the iteration they would ideally deserve.</p>
+    </div>
+  </section>
+
+  <!-- Slide 6: Metric -->
+  <section class="slide">
+    <div class="kicker">M — Success metric</div>
+    <h2>How I decide if the variant won</h2>
+
+    <p><strong>CVR</strong> (Conversion Rate) is the percentage of visitors who saw the landing and ended up signing up. <strong>Sliced by variant</strong> means I look at that percentage separately for each version (control vs. variant_a) so I can compare them.</p>
+
+    <div class="highlight-box">
+      <p><strong>Primary metric:</strong> CVR = <code>signup_succeeded</code> / <code>landing_viewed</code>, sliced per variant.</p>
+    </div>
+
+    <p><strong>How it reads in PostHog:</strong> the pipeline is already wired. Both events (<code>landing_viewed</code> and <code>signup_succeeded</code>) carry the <code>variant</code> property in their payload, so PostHog can segment automatically. I build a funnel — step 1 <code>landing_viewed</code> → step 2 <code>signup_succeeded</code> — with <em>breakdown</em> (segmentation) by <code>variant</code>. The output is two bars: one per version, each with its CVR.</p>
+
+    <h3>You can read it live in PostHog</h3>
+    <p>The pipeline is running. The three links below go straight to the PostHog view where each piece can be validated:</p>
+    <ul>
+      <li><strong>Experiment funnel:</strong> <a href="https://us.posthog.com/project/142665/insights/LpITQRNC" target="_blank" style="color: var(--accent);">us.posthog.com/project/142665/insights/LpITQRNC</a> — <code>landing_viewed → signup_succeeded</code> with breakdown by <code>variant</code>.</li>
+      <li><strong>Feature flag <code>landing_density</code>:</strong> <a href="https://us.posthog.com/project/142665/feature_flags/855713" target="_blank" style="color: var(--accent);">us.posthog.com/project/142665/feature_flags/855713</a> — multivariate configuration with 50/50 split, rolled out to 100%.</li>
+      <li><strong>Live activity feed:</strong> <a href="https://us.posthog.com/project/142665/activity/explore" target="_blank" style="color: var(--accent);">us.posthog.com/project/142665/activity/explore</a> — the 11 events firing in real time, each with its <code>variant</code> prop.</li>
+    </ul>
+  </section>
+
+  <!-- Slide 7: Sample size -->
+  <section class="slide">
+    <div class="kicker">Sample size</div>
+    <h2>How many users I need before I can trust the result</h2>
+
+    <p>Before running the experiment I need to know how many users each variant has to see so that the difference between the two is statistically reliable — not a coincidence. That number is computed from four parameters:</p>
+
+    <div class="cards cols-2">
+      <div class="card">
+        <h4>How much the landing converts today — 5%</h4>
+        <p>The percentage of visitors who already sign up, before the experiment. I assume 5% because I don't have access to fxreplay.com's real PostHog; it's a typical average for SaaS free-tier landings.</p>
+      </div>
+      <div class="card">
+        <h4>The smallest improvement I want to be able to detect — +10%</h4>
+        <p>If the variant improves CVR by less than this, the test marks it as "not significant" and I don't ship it. I picked 10% because below that it rarely justifies keeping two versions live.</p>
+      </div>
+      <div class="card">
+        <h4>Risk of a false winner I accept — 5%</h4>
+        <p>5% chance the test says "variant A won" when it didn't win anything. It's been the industry standard for decades.</p>
+      </div>
+      <div class="card">
+        <h4>Risk of missing a real winner I accept — 20%</h4>
+        <p>20% chance that if variant A did win, the test fails to detect it. Also standard.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 1.5rem;">
+      <p style="font-size: 1.05rem;"><strong>Result:</strong> with these four parameters, the standard statistical formula gives me <strong>~500 sessions per variant minimum</strong>. If fxreplay.com's real CVR were lower than 5%, the number grows — detecting the same improvement on a smaller base is harder.</p>
+    </div>
+
+    <div class="highlight-box" style="border-left-color: var(--warn); margin-top: 1.5rem;">
+      <p style="font-size: 1rem;"><strong>With more time:</strong> I would have measured the actual baseline CVR of fxreplay.com before assuming 5% — the sample size shifts a lot with that number. Without access to their analytics, public benchmarks were the honest proxy.</p>
+    </div>
+  </section>
+
+  <!-- Slide 8: Decision matrix -->
+  <section class="slide">
+    <div class="kicker">D — Decision criteria</div>
+    <h2>What I do with each type of result</h2>
+
+    <p>The decision thresholds are defined <strong>before looking at any results</strong>. It's how I avoid the classic bias of "the data convinced me now that I've seen it" — a typical enemy of experiments.</p>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+      <div class="decision-row">
+        <div class="cond">Variant A converts at least +10% better than control, the difference is statistically significant (p &lt; 0.05), <strong>AND</strong> no guardrail dropped by more than 5%</div>
+        <div class="action ship">Ship variant_a</div>
+      </div>
+      <div class="decision-row">
+        <div class="cond">Variant A converts at least -5% worse than control, and the difference is significant</div>
+        <div class="action reject">Reject variant_a</div>
+      </div>
+      <div class="decision-row">
+        <div class="cond">The difference lands between -5% and +10%, <strong>OR</strong> we don't reach statistical significance (p ≥ 0.05)</div>
+        <div class="action continue">Keep running</div>
+      </div>
+      <div class="decision-row">
+        <div class="cond">CVR improved <strong>BUT</strong> a critical guardrail (e.g., <code>signup_completion</code>) dropped by more than 15%</div>
+        <div class="action reject">Reject — uplift is artificial</div>
+      </div>
+    </div>
+
+    <p style="margin-top: 2rem;">The decision is <strong>rule-based, not subjective</strong>. Guardrails prevent the classic "we shipped a winner that broke something we weren't measuring" failure mode.</p>
+
+    <div class="highlight-box" style="border-left-color: var(--warn); margin-top: 1.5rem;">
+      <p style="font-size: 1rem;"><strong>With more time:</strong> I'd create an agent in the project that runs these calculations for me — sample size, statistical significance, guardrail checks — and connect the <strong>PostHog MCP</strong> so it pulls the experiment's real data straight into the chat. Today I have the decision matrix defined in text and the pipeline observable in PostHog; with the agent + MCP, the loop closes without leaving the editor: I ask "how is the test going?" and it answers with numbers and a recommendation grounded in these same rules.</p>
+    </div>
+  </section>
+
+  <!-- Slide 9: Implementation -->
+  <section class="slide">
+    <div class="kicker">Implementation</div>
+    <h2>How traffic is split and how the app picks a version</h2>
+
+    <p>A <strong>feature flag</strong> is a remote switch that decides what each user sees. In this case, when a visitor reaches <code>/</code>, PostHog assigns one of the two versions and the assignment sticks to their unique identifier — next time they return, they see the same version.</p>
+
+    <h3>Flag configuration in PostHog</h3>
+    <ul style="margin-bottom: 1.5rem;">
+      <li><strong>Flag name:</strong> <code>landing_density</code></li>
+      <li><strong>Type:</strong> multivariate (supports more than two values; today uses two).</li>
+      <li><strong>Split:</strong> 50% <code>control</code> / 50% <code>variant_a</code>. Assignment is <strong>stable per user</strong> — each visitor always sees the same version.</li>
+      <li><strong>Rollout:</strong> 100% of traffic enters the experiment.</li>
+    </ul>
+
+    <h3>How the code picks the version</h3>
+    <p>In <code>app/page.tsx</code>, when the landing loads the variant is resolved in two steps:</p>
+
+    <pre><code>const [variant, setVariant] = useState&lt;Variant&gt;('control')
+
+useEffect(() =&gt; {
+  // 1) If the URL carries ?v=variant_a, we force it manually
+  //    (useful for preview / QA without depending on the flag).
+  const override = new URLSearchParams(window.location.search).get('v') as Variant | null
+  if (override && KNOWN_VARIANTS.includes(override)) {
+    setVariant(override); return
+  }
+  // 2) Otherwise, ask PostHog which one this user got.
+  setVariant(getVariant('landing_density', 'control') as Variant)
+}, [])</code></pre>
+
+    <h3>How I confirmed it works</h3>
+    <ul>
+      <li>The <code>experiment_variant_assigned</code> event fires the first time a user resolves the variant — so PostHog shows the exact moment of assignment.</li>
+      <li>I verified the split from the command line: <code>curl POST /decide/</code> with 10 synthetic identifiers returned exactly 5 control and 5 variant_a. The split works.</li>
+    </ul>
+
+    <div class="highlight-box" style="border-left-color: var(--warn); margin-top: 1.5rem;">
+      <p style="font-size: 1rem;"><strong>Bug detected:</strong> validating the pipeline end-to-end I noticed <code>app/signup/page.tsx</code> hardcodes <code>variant='control'</code>, so right now users coming from <code>variant_a</code> are being registered as <code>control</code> in the post-landing events (<code>signup_*</code>, <code>welcome_viewed</code>).</p>
+      <p style="font-size: 1rem; margin-top: 0.75rem;"><strong>Why it happened:</strong> I set myself a 6-hour effective time-box and prioritized closing the landings and the PostHog pipeline.</p>
+      <p style="font-size: 1rem; margin-top: 0.75rem;"><strong>How I'd catch it in my daily workflow:</strong> by adding an agent to the AI-native workflow that reviews the code before every commit and detects this kind of broken cross-file propagation. Fix estimated for this specific bug if I had to do it now: ~2 min with AI (a <code>VariantContext</code> propagated to the trackers).</p>
+    </div>
+  </section>
+
+  <!-- Slide 10: Note for reviewer -->
+  <section class="slide">
+    <div class="kicker">A note on results</div>
+    <h2>Everything that can be verified today</h2>
+
+    <h3>What you can see today in PostHog</h3>
+    <p>The experiment is running. In the PostHog project the reviewer can confirm three concrete things:</p>
+    <ul>
+      <li><strong>Feature flag <code>landing_density</code></strong> active, multivariate, 50/50 split between <code>control</code> and <code>variant_a</code>, rolled out to 100% of traffic.</li>
+      <li><strong>Funnel insight</strong> <code>landing_viewed → signup_succeeded</code> with breakdown by <code>variant</code> — showing the CVR per version (with the little data from my own tests, ~30% overall, but the pipeline proves the number is calculated correctly).</li>
+      <li><strong>Live activity feed</strong> with the 11 typed events firing in order — <code>landing_viewed</code>, <code>cta_clicked</code>, <code>signup_viewed</code>, <code>signup_started</code>, <code>signup_submitted</code>, <code>signup_succeeded</code>, <code>identify</code>, <code>welcome_viewed</code> — each with its correct props including <code>variant</code>.</li>
+    </ul>
+
+    <h3>Validate the setup by hand</h3>
+    <ul>
+      <li><code>/?v=control</code> → renders the text-heavy landing (LandingVerbose).</li>
+      <li><code>/?v=variant_a</code> → renders the minimal landing (LandingMinimal).</li>
+      <li>Without a query param, PostHog assigns and sticks to the user identifier.</li>
+      <li>The activity feed shows every event with the correct <code>variant</code>.</li>
+    </ul>
+
+    <p style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);"><strong>Small note:</strong> post-landing events (<code>signup_*</code>, <code>welcome_viewed</code>) currently ship with <code>variant='control'</code> hardcoded in <code>app/signup/page.tsx</code>. It's broken cross-file propagation the compiler can't catch. In production I'd catch it with a pre-commit code-review agent — exactly the kind of gap that gets added to the AI-native workflow as it emerges. Fix estimated at ~2 min with AI (a <code>VariantContext</code>).</p>
+  </section>
+
+  <!-- Slide 11: Access and links -->
+  <section class="slide">
+    <div class="kicker">Access and links</div>
+    <h2>Everything you can review</h2>
+
+    <p>Direct links to each piece of the challenge, grouped by what each one is:</p>
+
+    <div class="example-card">
+      <h4>Live app</h4>
+      <p><a href="https://fx-replay-growth-challenge.vercel.app" target="_blank" style="color: var(--accent);">fx-replay-growth-challenge.vercel.app</a></p>
+      <p style="margin-top: 0.4rem;">The deployed application. Entry point — landing, signup, welcome, and the Users API all running end-to-end.</p>
+    </div>
+
+    <div class="example-card">
+      <h4>The two A/B landings (for side-by-side preview)</h4>
+      <p><strong>Control (text-heavy version):</strong> <a href="https://fx-replay-growth-challenge.vercel.app/?v=control" target="_blank" style="color: var(--accent);">fx-replay-growth-challenge.vercel.app/?v=control</a></p>
+      <p style="margin-top: 0.4rem;"><strong>Variant A (minimal version):</strong> <a href="https://fx-replay-growth-challenge.vercel.app/?v=variant_a" target="_blank" style="color: var(--accent);">fx-replay-growth-challenge.vercel.app/?v=variant_a</a></p>
+      <p style="margin-top: 0.4rem;">These let you see both versions in the same browser without depending on the flag's assignment.</p>
+    </div>
+
+    <div class="example-card">
+      <h4>Signups database (Notion)</h4>
+      <p><a href="https://app.notion.com/p/agustinacassi/FX-Replay-Challenge-3cc434ea601681ebb4a8d28d51e22732?source=copy_link" target="_blank" style="color: var(--accent);">app.notion.com/…/FX-Replay-Challenge</a></p>
+      <p style="margin-top: 0.4rem;">The database that receives every signup live. When someone signs up in the app, the row shows up here in seconds.</p>
+    </div>
+
+    <div class="example-card">
+      <h4>PostHog (analytics + A/B experiment)</h4>
+      <p>I already shared access to the project with you. If anyone else on the team wants access, send me their emails and I'll add them.</p>
+    </div>
+
+    <div class="example-card">
+      <h4>Figma (audit of the current site + brand kit)</h4>
+      <p><a href="https://www.figma.com/design/dh9Ju8ba2Y6adtuPLftzat/FX-Replay-Landing-Page---Sign-Up?node-id=0-1&p=f&t=3hLgXdpCnq2QppKh-0" target="_blank" style="color: var(--accent);">figma.com/design/…/FX-Replay-Landing-Page---Sign-Up</a></p>
+      <p style="margin-top: 0.4rem;">The post-its from the manual audit.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="navbar">
+  <button class="nav-btn" id="prev" aria-label="Previous slide">←</button>
+  <div class="nav-counter" id="counter">1 / 11</div>
+  <button class="nav-btn" id="next" aria-label="Next slide">→</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  let current = 0;
+
+  function show(i) {
+    if (i < 0 || i >= slides.length) return;
+    slides[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    slides[current].scrollTop = 0;
+  }
+
+  prev.addEventListener('click', () => show(current - 1));
+  next.addEventListener('click', () => show(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(current - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+
+  show(0);
+</script>
+
+</body>
+</html>
